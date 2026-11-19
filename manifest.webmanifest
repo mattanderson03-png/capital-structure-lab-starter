@@ -1,0 +1,14 @@
+{
+  "name": "AGE Capital Structure App",
+  "short_name": "AGE CapStruct",
+  "description": "FIN 4150: how borrowing changes Campus Deli and Sub Shop's share price, EPS, TIE and WACC.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f7fa",
+  "theme_color": "#12395b",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

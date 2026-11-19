@@ -265,3 +265,11 @@
     el.textContent = err.message + '. The page reads the files in data/, so it must be opened from a web server (GitHub Pages, or a local server), not by double-clicking index.html.';
   });
 })();
+
+// Register the service worker so the app installs and works offline.
+// Relative path, so it works under https://<username>.github.io/<repository>/.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => { /* the app still works without it */ });
+  });
+}
