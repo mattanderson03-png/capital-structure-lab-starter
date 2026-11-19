@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AGE Capital Structure App</title>
+  <meta name="theme-color" content="#12395b">
+  <meta name="description" content="FIN 4150: how borrowing changes Campus Deli and Sub Shop's share price, EPS, TIE and WACC.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="AGE CapStruct">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>AGE Capital Structure App</h1>
+    <p class="sub">FIN 4150 · Campus Deli and Sub Shop (CDSS)</p>
+  </header>
+
+  <main>
+    <div id="status" class="status">Loading the data files…</div>
+
+    <section id="cdss-lever">
+      <h2>Lever: CDSS's debt</h2>
+      <label for="cdss-slider" class="slider-label">Amount borrowed: <strong id="cdss-debt-value"></strong></label>
+      <input type="range" id="cdss-slider" min="0" step="1">
+      <div class="ticks" id="cdss-ticks"></div>
+      <div class="buttons">
+        <button type="button" id="btn-best-price">Best price</button>
+        <button type="button" id="btn-highest-eps">Highest EPS</button>
+      </div>
+      <p class="note" id="cdss-button-note"></p>
+      <div class="table-wrap"><table id="cdss-lever-table"></table></div>
+      <p class="note" id="cdss-lever-note"></p>
+    </section>
+
+    <section id="firms">
+      <h2>Lever: Firm L's debt (question c)</h2>
+      <label for="firml-slider" class="slider-label">Firm L's debt: <strong id="firml-debt-value"></strong></label>
+      <input type="range" id="firml-slider" min="0">
+      <div class="buttons">
+        <button type="button" id="btn-case">Case</button>
+      </div>
+      <p class="note" id="firms-note"></p>
+      <div class="table-wrap"><table id="firms-years"></table></div>
+      <h3>Summary</h3>
+      <div class="table-wrap"><table id="firms-summary"></table></div>
+    </section>
+
+    <section id="cdss">
+      <h2>CDSS at each amount of borrowing (question d)</h2>
+      <p class="note" id="cdss-note"></p>
+      <div id="zero-check"></div>
+
+      <h3>Case method: buy back at today's $20 (questions d(3) and d(4))</h3>
+      <div class="table-wrap"><table id="case-table"></table></div>
+
+      <h3>New-price method: buy back at the price after the announcement</h3>
+      <div class="table-wrap"><table id="new-table"></table></div>
+
+      <h3>What each method picks</h3>
+      <ul id="cdss-summary"></ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>All figures come from the files in <code>data/</code>. Everything runs in your browser; nothing is sent anywhere.</p>
+  </footer>
+
+  <script src="capstruct.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
