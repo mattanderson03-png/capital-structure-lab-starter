@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AGE Capital Structure App</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>AGE Capital Structure App</h1>
+    <p class="sub">FIN 4150 · Campus Deli and Sub Shop (CDSS)</p>
+  </header>
+
+  <main>
+    <div id="status" class="status">Loading the data files…</div>
+
+    <section id="firms">
+      <h2>Firm U and Firm L (question c)</h2>
+      <p class="note" id="firms-note"></p>
+      <div class="table-wrap"><table id="firms-years"></table></div>
+      <h3>Summary</h3>
+      <div class="table-wrap"><table id="firms-summary"></table></div>
+    </section>
+
+    <section id="cdss">
+      <h2>CDSS at each amount of borrowing (question d)</h2>
+      <p class="note" id="cdss-note"></p>
+      <div id="zero-check"></div>
+
+      <h3>Case method: buy back at today's $20 (questions d(3) and d(4))</h3>
+      <div class="table-wrap"><table id="case-table"></table></div>
+
+      <h3>New-price method: buy back at the price after the announcement</h3>
+      <div class="table-wrap"><table id="new-table"></table></div>
+
+      <h3>What each method picks</h3>
+      <ul id="cdss-summary"></ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>All figures come from the files in <code>data/</code>. Everything runs in your browser; nothing is sent anywhere.</p>
+  </footer>
+
+  <script src="capstruct.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

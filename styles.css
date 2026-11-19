@@ -1,0 +1,52 @@
+/* AGE Capital Structure App: plain styles, readable at 375px wide. */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #1d2733;
+  background: #f5f7fa;
+  line-height: 1.45;
+}
+
+header, main, footer { max-width: 960px; margin: 0 auto; padding: 0 16px; }
+header { padding-top: 20px; }
+h1 { font-size: 1.5rem; margin: 0; color: #12395b; }
+h2 { font-size: 1.2rem; color: #12395b; margin: 0 0 8px; }
+h3 { font-size: 1rem; margin: 18px 0 6px; }
+.sub { margin: 2px 0 12px; color: #5a6878; }
+
+section {
+  background: #fff;
+  border: 1px solid #dde3ea;
+  border-radius: 10px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.note { color: #4a5868; font-size: 0.92rem; margin: 0 0 8px; }
+
+.status { font-size: 0.92rem; color: #5a6878; }
+.status.error, .warning {
+  background: #fdecea; border: 1px solid #f1b0a8; color: #8a1c10;
+  padding: 8px 10px; border-radius: 6px;
+}
+.ok { color: #1d6b3a; font-size: 0.92rem; }
+
+/* Tables scroll inside their own box, so the page itself never scrolls sideways. */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; width: 100%; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+th, td { padding: 6px 8px; border-bottom: 1px solid #e6eaef; white-space: nowrap; }
+th { background: #eef2f6; text-align: right; font-weight: 600; }
+th:first-child, td:first-child { text-align: left; position: sticky; left: 0; background: #fff; }
+th:first-child { background: #eef2f6; }
+td { text-align: right; }
+tr.group td { background: #f8fafc; font-weight: 600; text-align: left; }
+tr.best td { background: #eaf6ee; }
+tr.best td:first-child { background: #eaf6ee; }
+
+#cdss-summary { padding-left: 20px; margin: 4px 0; }
+#cdss-summary li { margin: 3px 0; }
+
+footer { color: #6a7888; font-size: 0.85rem; padding-bottom: 24px; }
+code { font-size: 0.9em; }
