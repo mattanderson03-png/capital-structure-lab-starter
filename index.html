@@ -15,8 +15,27 @@
   <main>
     <div id="status" class="status">Loading the data files…</div>
 
+    <section id="cdss-lever">
+      <h2>Lever: CDSS's debt</h2>
+      <label for="cdss-slider" class="slider-label">Amount borrowed: <strong id="cdss-debt-value"></strong></label>
+      <input type="range" id="cdss-slider" min="0" step="1">
+      <div class="ticks" id="cdss-ticks"></div>
+      <div class="buttons">
+        <button type="button" id="btn-best-price">Best price</button>
+        <button type="button" id="btn-highest-eps">Highest EPS</button>
+      </div>
+      <p class="note" id="cdss-button-note"></p>
+      <div class="table-wrap"><table id="cdss-lever-table"></table></div>
+      <p class="note" id="cdss-lever-note"></p>
+    </section>
+
     <section id="firms">
-      <h2>Firm U and Firm L (question c)</h2>
+      <h2>Lever: Firm L's debt (question c)</h2>
+      <label for="firml-slider" class="slider-label">Firm L's debt: <strong id="firml-debt-value"></strong></label>
+      <input type="range" id="firml-slider" min="0">
+      <div class="buttons">
+        <button type="button" id="btn-case">Case</button>
+      </div>
       <p class="note" id="firms-note"></p>
       <div class="table-wrap"><table id="firms-years"></table></div>
       <h3>Summary</h3>

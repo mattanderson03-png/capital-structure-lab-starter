@@ -52,29 +52,35 @@
   }
 
   // ---------- Table helper ----------
-  function fillTable(table, header, rows) {
+  // selCol: index of a data column to highlight (0 = first column after the label), or null.
+  function fillTable(table, header, rows, selCol) {
     const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
-    let html = '<thead><tr>' + header.map(h => '<th>' + esc(h) + '</th>').join('') + '</tr></thead><tbody>';
+    const sel = i => (selCol !== undefined && selCol !== null && i === selCol + 1 ? ' class="sel"' : '');
+    let html = '<thead><tr>' + header.map((h, i) => '<th' + sel(i) + '>' + esc(h) + '</th>').join('') + '</tr></thead><tbody>';
     rows.forEach(r => {
       const cls = r.cls ? ' class="' + r.cls + '"' : '';
       if (r.group) {
         html += '<tr class="group"><td colspan="' + header.length + '">' + esc(r.group) + '</td></tr>';
       } else {
-        html += '<tr' + cls + '>' + r.cells.map(c => '<td>' + esc(c) + '</td>').join('') + '</tr>';
+        html += '<tr' + cls + '>' + r.cells.map((c, i) => '<td' + sel(i) + '>' + esc(c) + '</td>').join('') + '</tr>';
       }
     });
     table.innerHTML = html + '</tbody>';
   }
 
   // ---------- Firm U and Firm L ----------
-  function renderFirms(d) {
+  function renderFirms(d, debtL) {
     const f = d.firms;
     const U = C.exampleFirm(d.scenarios, f.total_assets, 0, f.interest_rate, d.T);
-    const L = C.exampleFirm(d.scenarios, f.total_assets, f.firm_l_debt, f.interest_rate, d.T);
+    const L = C.exampleFirm(d.scenarios, f.total_assets, debtL, f.interest_rate, d.T);
 
+    document.getElementById('firml-debt-value').textContent = dollars(debtL) +
+      (debtL === f.firm_l_debt ? ' (the case)' : '');
     document.getElementById('firms-note').textContent =
       'Both firms have ' + dollars(f.total_assets) + ' of assets and a ' + pct(d.T) + ' tax rate. Firm L has ' +
-      dollars(f.firm_l_debt) + ' of debt at ' + pct(f.interest_rate) + '. ROE uses book equity (assets − debt).';
+      dollars(debtL) + ' of debt. The interest rate is held at ' + pct(f.interest_rate) +
+      ' at every amount, so the slider shows what debt does to Firm L\'s return and risk, not how lenders would respond. ' +
+      'ROE uses book equity (assets − debt).';
 
     const header = ['', ...U.years.map(y => 'U · p=' + y.probability), ...L.years.map(y => 'L · p=' + y.probability)];
     const line = (label, fn) => ({ cells: [label, ...U.years.map(fn), ...L.years.map(fn)] });
@@ -102,8 +108,8 @@
   }
 
   // ---------- CDSS ----------
-  function renderCdss(d) {
-    const rows = C.cdssTable(d.cdss, d.T, d.schedule);
+  // sel: index of the banker's row picked on the debt slider (highlighted in both tables).
+  function renderCdss(d, rows, sel) {
     const s = C.summary(rows);
     const ebit = C.cdssEbit(d.cdss);
 
@@ -139,7 +145,7 @@
       { cells: ['Share price', ...rows.map((r, i) => cents(r.caseMethod.price) + mark(i))], cls: 'best' },
       { cells: ['WACC, book weights', ...rows.map(r => pct(r.caseMethod.wacc))] },
       { cells: ['Mgmt\'s stake', ...rows.map(r => stakeText(r.caseMethod.mgmtStake))] }
-    ]);
+    ], sel);
 
     const markNew = i => (i === s.bestPriceNew ? '★' : '');
     fillTable(document.getElementById('new-table'), header, [
@@ -153,7 +159,7 @@
       { cells: ['TIE', ...rows.map(r => mult(r.tie))] },
       { cells: ['WACC, market weights', ...rows.map(r => pct(r.newPriceMethod.wacc))] },
       { cells: ['Mgmt\'s stake', ...rows.map(r => stakeText(r.newPriceMethod.mgmtStake))] }
-    ]);
+    ], sel);
 
     const amt = i => dollars(rows[i].debt);
     const items = [
@@ -173,10 +179,85 @@
     document.getElementById('cdss-summary').innerHTML = items.map(t => '<li>' + t + '</li>').join('');
   }
 
+  // ---------- CDSS debt lever ----------
+  // Side-by-side view of both buyback methods at the amount picked on the slider.
+  function renderCdssLever(d, rows, i) {
+    const r = rows[i], a = r.caseMethod, b = r.newPriceMethod;
+    document.getElementById('cdss-debt-value').textContent = dollars(r.debt);
+    fillTable(document.getElementById('cdss-lever-table'),
+      ['At ' + dollars(r.debt), 'Case (' + cents(d.cdss.share_price) + ')', 'New price'], [
+        { cells: ['r_d', r.rd === null ? '—' : pct(r.rd), r.rd === null ? '—' : pct(r.rd)] },
+        { cells: ['r_s', pct(r.rs), pct(r.rs)] },
+        { cells: ['Share price', cents(a.price), cents(b.price)], cls: 'best' },
+        { cells: ['Shares repurchased', shares(a.repurchased), shares(b.repurchased)] },
+        { cells: ['Shares remaining', shares(a.remaining), shares(b.remaining)] },
+        { cells: ['EPS', cents(a.eps), cents(b.eps)] },
+        { cells: ['Dividends per share', cents(a.dps), cents(b.dps)] },
+        { cells: ['TIE', mult(r.tie), mult(r.tie)] },
+        { cells: ['WACC', pct(a.wacc), pct(b.wacc)] },
+        { cells: ['Mgmt\'s share', stakeText(a.mgmtStake), stakeText(b.mgmtStake)] }
+      ]);
+    const notes = ['WACC uses book weights with the case method and market weights with the new-price method.'];
+    [a, b].forEach((m, k) => {
+      const label = k === 0 ? 'case method' : 'new-price method';
+      if (m.mgmtStake.status === 'all_outside_gone') notes.push('* With the ' + label + ', the buyback retires every outside share: no outside shareholders would be left.');
+      if (m.mgmtStake.status === 'must_sell') notes.push('Warning: with the ' + label + ', the buyback needs more shares than outside investors own, so management would have to sell.');
+    });
+    document.getElementById('cdss-lever-note').textContent = notes.join(' ');
+  }
+
+  // Button rule: if both methods pick the same amount, go there; if not, go to the
+  // case method's amount and name both. (Ties already go to the smaller debt in C.summary.)
+  function pickFor(rows, caseIdx, newIdx, what) {
+    if (caseIdx === newIdx) return { idx: caseIdx, note: what + ': both methods pick ' + dollars(rows[caseIdx].debt) + '.' };
+    return {
+      idx: caseIdx,
+      note: what + ': the case method picks ' + dollars(rows[caseIdx].debt) + ' and the new-price method picks ' +
+        dollars(rows[newIdx].debt) + '. The slider moved to the case method\'s amount.'
+    };
+  }
+
   // ---------- Start ----------
   loadAll().then(d => {
-    renderFirms(d);
-    renderCdss(d);
+    const rows = C.cdssTable(d.cdss, d.T, d.schedule);
+    const s = C.summary(rows);
+
+    // CDSS slider: one stop per row of the banker's schedule, nothing in between.
+    const cdssSlider = document.getElementById('cdss-slider');
+    cdssSlider.max = String(rows.length - 1);
+    const caseRow = rows.findIndex(r => r.debt === d.cdss.debt);
+    cdssSlider.value = String(caseRow >= 0 ? caseRow : 0);
+    document.getElementById('cdss-ticks').innerHTML =
+      rows.map(r => '<span>' + (r.debt >= 1e6 ? '$' + r.debt / 1e6 + 'M' : '$' + r.debt / 1000 + 'k') + '</span>').join('');
+    const buttonNote = document.getElementById('cdss-button-note');
+    const showCdss = () => {
+      const i = Number(cdssSlider.value);
+      renderCdssLever(d, rows, i);
+      renderCdss(d, rows, i);
+    };
+    cdssSlider.addEventListener('input', () => { buttonNote.textContent = ''; showCdss(); });
+    document.getElementById('btn-best-price').addEventListener('click', () => {
+      const p = pickFor(rows, s.bestPriceCase, s.bestPriceNew, 'Best price');
+      cdssSlider.value = String(p.idx); buttonNote.textContent = p.note; showCdss();
+    });
+    document.getElementById('btn-highest-eps').addEventListener('click', () => {
+      const p = pickFor(rows, s.highestEpsCase, s.highestEpsNew, 'Highest EPS');
+      cdssSlider.value = String(p.idx); buttonNote.textContent = p.note; showCdss();
+    });
+
+    // Firm L slider: 0 to slider_max in steps of slider_step, from example_firms.csv.
+    const f = d.firms;
+    const lSlider = document.getElementById('firml-slider');
+    lSlider.max = String(f.slider_max);
+    lSlider.step = String(f.slider_step);
+    lSlider.value = String(f.firm_l_debt);
+    document.getElementById('btn-case').textContent = 'Case (' + dollars(f.firm_l_debt) + ')';
+    const showFirms = () => renderFirms(d, Number(lSlider.value));
+    lSlider.addEventListener('input', showFirms);
+    document.getElementById('btn-case').addEventListener('click', () => { lSlider.value = String(f.firm_l_debt); showFirms(); });
+
+    showCdss();
+    showFirms();
     document.getElementById('status').textContent = '';
   }).catch(err => {
     const el = document.getElementById('status');
