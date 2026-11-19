@@ -1,0 +1,9 @@
+section,item,value
+operations,sales,1350000
+operations,variable_cost_rate,0.60
+operations,fixed_costs,40000
+balance_sheet,total_assets,2000000
+balance_sheet,debt,0
+market,shares_outstanding,100000
+market,share_price,20.00
+market,management_share,0.50

@@ -1,0 +1,6 @@
+item,value,note
+total_assets,20000,Firm U and Firm L
+firm_l_debt,10000,Firm L's debt in question c
+interest_rate,0.12,Firm L's interest rate
+slider_max,12500,Highest debt on the Firm L slider (the AGE exhibit's optimal capital structure sheet uses 0 to 12500)
+slider_step,2500,Step for the Firm L slider
